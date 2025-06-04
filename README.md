@@ -2,6 +2,18 @@
 
 A simple command line supermarket assistant that lets you manage a small shopping cart. Use it to add or remove items and display the total amount.
 
+## Installation
+
+This project requires Python 3 and the dependencies listed in
+`requirements.txt`. Install them using pip:
+
+```bash
+pip install -r requirements.txt
+```
+
+The dataset builder relies on the `requests` package which is included in
+`requirements.txt`.
+
 ## Running the bot
 
 ```bash
