@@ -2,11 +2,14 @@ import unittest
 from unittest import mock
 import requests
 
+
 from supermarket_bot import dataset
 
 class TestDataset(unittest.TestCase):
     def test_iter_products(self):
+
         root_data = {"results": [{"categories": [{"id": 1}]}]}
+
         cat1_data = {
             "products": [],
             "categories": [
@@ -41,6 +44,7 @@ class TestDataset(unittest.TestCase):
             items = list(dataset.iter_products())
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["id"], "p1")
+
 
     def test_iter_products_skips_missing_category(self):
         root_data = {"results": [{"categories": [{"id": 1}, {"id": 99}]}]}
@@ -87,6 +91,7 @@ class TestDataset(unittest.TestCase):
 
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["id"], "p1")
+
 
 if __name__ == "__main__":
     unittest.main()

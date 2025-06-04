@@ -25,6 +25,7 @@ def _fetch_category(cat_id: int) -> Dict:
 def _root_categories() -> Iterable[int]:
     data = _get_json("/categories/")
     for cat in data.get("results", []):
+
         for sub in cat.get("categories", []):
             if isinstance(sub, dict) and "id" in sub:
                 yield sub["id"]
@@ -59,7 +60,9 @@ def iter_products() -> Iterable[Dict]:
 
 
 def build_dataset(csv_path: str) -> None:
+
     """Fetch all products and write them to a CSV file with columns id, name and price."""
+
     with open(csv_path, "w", newline="", encoding="utf-8") as fh:
         writer = csv.writer(fh)
         writer.writerow(["id", "name", "price"])
