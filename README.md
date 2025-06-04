@@ -25,7 +25,7 @@ You will be presented with a menu to add items, remove items, list the cart cont
 ## Building a Mercadona product dataset
 
 You can fetch all available products and prices from the public Mercadona API and
-store them in a CSV file:
+store them in a CSV file. The CSV contains three columns: `id`, `name` and `price`:
 
 ```bash
 python3 -m supermarket_bot.dataset products.csv

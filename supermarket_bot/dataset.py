@@ -31,28 +31,35 @@ def _root_categories() -> Iterable[int]:
 
 
 def iter_products() -> Iterable[Dict]:
-    """Yield all products available in the Mercadona API."""
-    seen: Set[int] = set()
+    """Yield all products available in the Mercadona API without duplicates."""
+    cat_seen: Set[int] = set()
+    product_seen: Set[int] = set()
     queue = list(_root_categories())
     while queue:
         cid = queue.pop()
-        if cid in seen:
+        if cid in cat_seen:
             continue
-        seen.add(cid)
+        cat_seen.add(cid)
         cat = _fetch_category(cid)
         if not cat:
             continue
         for prod in cat.get("products", []):
-            yield prod
+            pid = prod.get("id")
+            if pid not in product_seen:
+                product_seen.add(pid)
+                yield prod
         for sub in cat.get("categories", []):
             for prod in sub.get("products", []):
-                yield prod
-            if isinstance(sub, dict) and "id" in sub and sub["id"] not in seen:
+                pid = prod.get("id")
+                if pid not in product_seen:
+                    product_seen.add(pid)
+                    yield prod
+            if isinstance(sub, dict) and "id" in sub and sub["id"] not in cat_seen:
                 queue.append(sub["id"])
 
 
 def build_dataset(csv_path: str) -> None:
-    """Fetch all products and write them to a CSV file."""
+    """Fetch all products and write them to a CSV file with columns id, name and price."""
     with open(csv_path, "w", newline="", encoding="utf-8") as fh:
         writer = csv.writer(fh)
         writer.writerow(["id", "name", "price"])
