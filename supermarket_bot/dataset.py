@@ -13,13 +13,21 @@ def _get_json(path: str) -> Dict:
 
 
 def _fetch_category(cat_id: int) -> Dict:
-    return _get_json(f"/categories/{cat_id}/")
+    """Return category JSON or empty dict if the category does not exist."""
+    try:
+        return _get_json(f"/categories/{cat_id}/")
+    except requests.HTTPError as exc:  # type: ignore[attr-defined]
+        if exc.response is not None and exc.response.status_code == 404:
+            return {}
+        raise
 
 
 def _root_categories() -> Iterable[int]:
     data = _get_json("/categories/")
     for cat in data.get("results", []):
-        yield cat["id"]
+        for sub in cat.get("categories", []):
+            if isinstance(sub, dict) and "id" in sub:
+                yield sub["id"]
 
 
 def iter_products() -> Iterable[Dict]:
@@ -32,6 +40,8 @@ def iter_products() -> Iterable[Dict]:
             continue
         seen.add(cid)
         cat = _fetch_category(cid)
+        if not cat:
+            continue
         for prod in cat.get("products", []):
             yield prod
         for sub in cat.get("categories", []):
